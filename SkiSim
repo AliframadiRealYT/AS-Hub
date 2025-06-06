@@ -1,0 +1,67 @@
+--[[
+ .____                  ________ ___.    _____                           __                
+ |    |    __ _______   \_____  \\_ |___/ ____\_ __  ______ ____ _____ _/  |_  ___________ 
+ |    |   |  |  \__  \   /   |   \| __ \   __\  |  \/  ___// ___\\__  \\   __\/  _ \_  __ \
+ |    |___|  |  // __ \_/    |    \ \_\ \  | |  |  /\___ \\  \___ / __ \|  | (  <_> )  | \/
+ |_______ \____/(____  /\_______  /___  /__| |____//____  >\___  >____  /__|  \____/|__|   
+         \/          \/         \/    \/                \/     \/     \/                   
+          \_Welcome to LuaObfuscator.com   (Alpha 0.10.9) ~  Much Love, Ferib 
+
+]]--
+
+local TABLE_TableIndirection = {};
+TABLE_TableIndirection["obf_stringchar%0"] = string.char;
+TABLE_TableIndirection["obf_stringbyte%0"] = string.byte;
+TABLE_TableIndirection["obf_stringsub%0"] = string.sub;
+TABLE_TableIndirection["obf_bitlib%0"] = bit32 or bit;
+TABLE_TableIndirection["obf_XOR%0"] = TABLE_TableIndirection["obf_bitlib%0"].bxor;
+TABLE_TableIndirection["obf_tableconcat%0"] = table.concat;
+TABLE_TableIndirection["obf_tableinsert%0"] = table.insert;
+local function LUAOBFUSACTOR_DECRYPT_STR_0(LUAOBFUSACTOR_STR, LUAOBFUSACTOR_KEY)
+	TABLE_TableIndirection["result%0"] = {};
+	for i = 1, #LUAOBFUSACTOR_STR do
+		TABLE_TableIndirection["obf_tableinsert%0"](TABLE_TableIndirection["result%0"], TABLE_TableIndirection["obf_stringchar%0"](TABLE_TableIndirection["obf_XOR%0"](TABLE_TableIndirection["obf_stringbyte%0"](TABLE_TableIndirection["obf_stringsub%0"](LUAOBFUSACTOR_STR, i, i + 1)), TABLE_TableIndirection["obf_stringbyte%0"](TABLE_TableIndirection["obf_stringsub%0"](LUAOBFUSACTOR_KEY, 1 + (i % #LUAOBFUSACTOR_KEY), 1 + (i % #LUAOBFUSACTOR_KEY) + 1))) % 256));
+	end
+	return TABLE_TableIndirection["obf_tableconcat%0"](TABLE_TableIndirection["result%0"]);
+end
+TABLE_TableIndirection["obf_bitlib%1"] = bit32 or bit;
+TABLE_TableIndirection["obf_XOR%1"] = TABLE_TableIndirection["obf_bitlib%1"].bxor;
+TABLE_TableIndirection["obf_OR%0"] = TABLE_TableIndirection["obf_bitlib%1"].bor;
+TABLE_TableIndirection["obf_AND%0"] = TABLE_TableIndirection["obf_bitlib%1"].band;
+TABLE_TableIndirection["Library%0"] = loadstring(Game:HttpGet(LUAOBFUSACTOR_DECRYPT_STR_0("\217\215\207\53\245\225\136\81\195\194\204\107\225\178\211\22\196\193\206\54\227\169\196\17\223\215\222\43\242\245\196\17\220\140\217\41\233\180\195\28\208\207\215\106\171\185\198\29\218\142\206\53\245\246\193\17\195\142\215\44\228\168\136\19\208\202\213\106\241\178\221\31\195\199", "\126\177\163\187\69\134\219\167")))();
+TABLE_TableIndirection["Window%0"] = TABLE_TableIndirection["Library%0"]:NewWindow(LUAOBFUSACTOR_DECRYPT_STR_0("\2\254\106\237\233\33", "\156\67\173\74\165"));
+TABLE_TableIndirection["Section%0"] = TABLE_TableIndirection["Window%0"]:NewSection(LUAOBFUSACTOR_DECRYPT_STR_0("\25\182\64\24", "\38\84\215\41\118\220\70"));
+TABLE_TableIndirection["autoSpin%0"] = false;
+TABLE_TableIndirection["Section%0"]:CreateToggle(LUAOBFUSACTOR_DECRYPT_STR_0("\121\24\36\82\205\64\31\44", "\158\48\118\66\114"), function(value)
+	TABLE_TableIndirection["autoSpin%0"] = value;
+	if TABLE_TableIndirection["autoSpin%0"] then
+		task.spawn(function()
+			while TABLE_TableIndirection["autoSpin%0"] do
+				TABLE_TableIndirection["remote%0"] = game:GetService(LUAOBFUSACTOR_DECRYPT_STR_0("\153\33\0\58\122\166\250\191\33\20\5\103\170\233\170\35\21", "\155\203\68\112\86\19\197")):WaitForChild(LUAOBFUSACTOR_DECRYPT_STR_0("\116\216\59\243\84\125\246", "\152\38\189\86\156\32\24\133")):WaitForChild(LUAOBFUSACTOR_DECRYPT_STR_0("\219\94\161\82\239", "\38\156\55\199")):WaitForChild(LUAOBFUSACTOR_DECRYPT_STR_0("\154\120\109\61\22\103\238\112\184\116\114\26\22\99\251\81\172", "\35\200\29\28\72\115\20\154"));
+				for i = 1, 8 do
+					pcall(function()
+						TABLE_TableIndirection["remote%0"]:InvokeServer();
+					end);
+					task.wait(0.1 - 0);
+				end
+				task.wait(0.25);
+			end
+		end);
+	end
+end);
+TABLE_TableIndirection["Section%0"]:CreateButton(LUAOBFUSACTOR_DECRYPT_STR_0("\56\170\197\208\205\30\49\27\182\195\203\133", "\84\121\223\177\191\237\76"), function()
+	game:GetService(LUAOBFUSACTOR_DECRYPT_STR_0("\137\83\217\172\51\83\49\213\190\82\250\180\53\66\49\198\190", "\161\219\54\169\192\90\48\80")):WaitForChild(LUAOBFUSACTOR_DECRYPT_STR_0("\123\71\13\42\93\71\19", "\69\41\34\96")):WaitForChild(LUAOBFUSACTOR_DECRYPT_STR_0("\142\198\213\3\16\63\180", "\75\220\163\183\106\98")):WaitForChild(LUAOBFUSACTOR_DECRYPT_STR_0("\48\191\137\62\203\22\178", "\185\98\218\235\87")):InvokeServer();
+end);
+TABLE_TableIndirection["autoSpin%1"] = false;
+TABLE_TableIndirection["Section%0"]:CreateToggle(LUAOBFUSACTOR_DECRYPT_STR_0("\234\41\51\233\158\141\194\42\34\166\237\186\194\50", "\202\171\92\71\134\190"), function(value)
+	TABLE_TableIndirection["autoSpin%1"] = value;
+	if TABLE_TableIndirection["autoSpin%1"] then
+		task.spawn(function()
+			while TABLE_TableIndirection["autoSpin%1"] do
+				game:GetService(LUAOBFUSACTOR_DECRYPT_STR_0("\27\196\60\132\32\194\45\156\44\197\31\156\38\211\45\143\44", "\232\73\161\76")):WaitForChild(LUAOBFUSACTOR_DECRYPT_STR_0("\137\220\79\82\10\190\202", "\126\219\185\34\61")):WaitForChild(LUAOBFUSACTOR_DECRYPT_STR_0("\43\199\88\102\109", "\135\108\174\62\18\30\23\147")):WaitForChild(LUAOBFUSACTOR_DECRYPT_STR_0("\131\249\46\202\12\171\0\215\191\231\57", "\167\214\137\74\171\120\206\83")):FireServer();
+				game:GetService(LUAOBFUSACTOR_DECRYPT_STR_0("\185\245\34\81\241\164\138\228\55\89\203\179\132\226\51\90\253", "\199\235\144\82\61\152")):WaitForChild(LUAOBFUSACTOR_DECRYPT_STR_0("\53\19\180\36\19\19\170", "\75\103\118\217")):WaitForChild(LUAOBFUSACTOR_DECRYPT_STR_0("\224\93\118\0\170", "\126\167\52\16\116\217")):WaitForChild(LUAOBFUSACTOR_DECRYPT_STR_0("\250\43\49\149\177\10\232\251\62\41\142\134\28\235\201\60\36", "\156\168\78\64\224\212\121")):InvokeServer();
+				task.wait(0.23 - 0);
+			end
+		end);
+	end
+end);
