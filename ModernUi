@@ -1,0 +1,176 @@
+local UILib = {}
+
+function UILib:CreateWindow(titleName)
+    local gui = Instance.new("ScreenGui", game.CoreGui)
+    gui.Name = "ModernUILibrary"
+
+    local frame = Instance.new("Frame", gui)
+    frame.Size = UDim2.new(0, 400, 0, 300)
+    frame.Position = UDim2.new(0.3, 0, 0.3, 0)
+    frame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    frame.BorderSizePixel = 0
+    frame.Active = true
+    frame.Draggable = true
+
+    local title = Instance.new("TextLabel", frame)
+    title.Size = UDim2.new(1, 0, 0, 40)
+    title.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    title.Text = titleName
+    title.Font = Enum.Font.GothamBold
+    title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    title.TextSize = 20
+
+    local toggleButton = Instance.new("TextButton", frame)
+    toggleButton.Size = UDim2.new(0, 40, 0, 40)
+    toggleButton.Position = UDim2.new(1, -45, 0, 0)
+    toggleButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+    toggleButton.Text = "-"
+    toggleButton.Font = Enum.Font.GothamBold
+    toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    toggleButton.TextSize = 22
+
+    local content = Instance.new("Frame", frame)
+    content.Position = UDim2.new(0, 0, 0, 40)
+    content.Size = UDim2.new(1, 0, 1, -40)
+    content.BackgroundTransparency = 1
+
+    local layout = Instance.new("UIListLayout", content)
+    layout.Padding = UDim.new(0, 5)
+    layout.SortOrder = Enum.SortOrder.LayoutOrder
+
+    -- Toggle buka/tutup
+    local isOpen = true
+    toggleButton.MouseButton1Click:Connect(function()
+        isOpen = not isOpen
+        content.Visible = isOpen
+        toggleButton.Text = isOpen and "-" or "+"
+        frame.Size = isOpen and UDim2.new(0, 400, 0, 300) or UDim2.new(0, 400, 0, 40)
+    end)
+
+    local window = {}
+
+    function window:CreateButton(text, callback)
+        local btn = Instance.new("TextButton", content)
+        btn.Size = UDim2.new(1, -20, 0, 40)
+        btn.BackgroundColor3 = Color3.fromRGB(60, 120, 200)
+        btn.Text = text
+        btn.Font = Enum.Font.GothamBold
+        btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        btn.TextSize = 18
+        btn.MouseButton1Click:Connect(callback)
+    end
+
+    function window:CreateToggle(text, callback)
+        local toggle = false
+        local btn = Instance.new("TextButton", content)
+        btn.Size = UDim2.new(1, -20, 0, 40)
+        btn.BackgroundColor3 = Color3.fromRGB(120, 60, 60)
+        btn.Text = "[ OFF ] " .. text
+        btn.Font = Enum.Font.Gotham
+        btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        btn.TextSize = 18
+        btn.MouseButton1Click:Connect(function()
+            toggle = not toggle
+            btn.Text = (toggle and "[ ON ] " or "[ OFF ] ") .. text
+            callback(toggle)
+        end)
+    end
+
+    function window:CreateSlider(text, min, max, callback)
+        local sliderFrame = Instance.new("Frame", content)
+        sliderFrame.Size = UDim2.new(1, -20, 0, 60)
+        sliderFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+
+        local label = Instance.new("TextLabel", sliderFrame)
+        label.Size = UDim2.new(1, 0, 0, 20)
+        label.BackgroundTransparency = 1
+        label.Text = text .. ": " .. min
+        label.Font = Enum.Font.Gotham
+        label.TextColor3 = Color3.fromRGB(255, 255, 255)
+        label.TextSize = 16
+
+        local slider = Instance.new("TextButton", sliderFrame)
+        slider.Position = UDim2.new(0, 10, 0, 25)
+        slider.Size = UDim2.new(1, -20, 0, 25)
+        slider.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+        slider.Text = ""
+
+        local value = min
+
+        slider.MouseButton1Down:Connect(function()
+            local conn
+            conn = game:GetService("UserInputService").InputChanged:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseMovement then
+                    local pos = math.clamp((input.Position.X - slider.AbsolutePosition.X) / slider.AbsoluteSize.X, 0, 1)
+                    value = math.floor((max - min) * pos + min)
+                    label.Text = text .. ": " .. value
+                    callback(value)
+                end
+            end)
+            game:GetService("UserInputService").InputEnded:Wait()
+            conn:Disconnect()
+        end)
+    end
+
+    function window:CreateDropdown(text, list, callback)
+        local main = Instance.new("TextButton", content)
+        main.Size = UDim2.new(1, -20, 0, 40)
+        main.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+        main.Text = "[▼] " .. text
+        main.Font = Enum.Font.Gotham
+        main.TextColor3 = Color3.fromRGB(255, 255, 255)
+        main.TextSize = 18
+
+        local open = false
+
+        main.MouseButton1Click:Connect(function()
+            open = not open
+            for _, v in ipairs(content:GetChildren()) do
+                if v.Name == "DropdownOption" then v:Destroy() end
+            end
+
+            if open then
+                for _, item in ipairs(list) do
+                    local opt = Instance.new("TextButton", content)
+                    opt.Name = "DropdownOption"
+                    opt.Size = UDim2.new(1, -40, 0, 30)
+                    opt.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+                    opt.Text = " - " .. item
+                    opt.Font = Enum.Font.Gotham
+                    opt.TextColor3 = Color3.fromRGB(255, 255, 255)
+                    opt.TextSize = 16
+
+                    opt.MouseButton1Click:Connect(function()
+                        main.Text = "[▼] " .. item
+                        callback(item)
+                        open = false
+                        for _, v in ipairs(content:GetChildren()) do
+                            if v.Name == "DropdownOption" then v:Destroy() end
+                        end
+                    end)
+                end
+            end
+        end)
+    end
+
+    function window:CreateTextbox(placeholder, callback)
+        local box = Instance.new("TextBox", content)
+        box.Size = UDim2.new(1, -20, 0, 40)
+        box.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+        box.PlaceholderText = placeholder
+        box.Font = Enum.Font.Gotham
+        box.TextColor3 = Color3.fromRGB(255, 255, 255)
+        box.TextSize = 18
+        box.ClearTextOnFocus = false
+
+        box.FocusLost:Connect(function(enter)
+            if enter then
+                callback(box.Text)
+            end
+        end)
+    end
+
+    return window
+end
+
+return UILib
