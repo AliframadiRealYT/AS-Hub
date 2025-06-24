@@ -20,6 +20,15 @@ function UILib:CreateWindow(titleName)
     title.TextColor3 = Color3.fromRGB(255, 255, 255)
     title.TextSize = 20
 
+    local toggleButton = Instance.new("TextButton", frame)
+    toggleButton.Size = UDim2.new(0, 40, 0, 40)
+    toggleButton.Position = UDim2.new(1, -45, 0, 0)
+    toggleButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+    toggleButton.Text = "-"
+    toggleButton.Font = Enum.Font.GothamBold
+    toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    toggleButton.TextSize = 22
+
     local tabBar = Instance.new("Frame", frame)
     tabBar.Size = UDim2.new(0, 120, 1, -40)
     tabBar.Position = UDim2.new(0, 0, 0, 40)
@@ -35,6 +44,24 @@ function UILib:CreateWindow(titleName)
     contentFrame.BackgroundTransparency = 1
 
     local tabs = {}
+
+    -- Toggle buka/tutup
+    local isOpen = true
+    toggleButton.MouseButton1Click:Connect(function()
+        isOpen = not isOpen
+        tabBar.Visible = isOpen
+        contentFrame.Visible = isOpen
+        toggleButton.Text = isOpen and "-" or "+"
+        frame.Size = isOpen and UDim2.new(0, 500, 0, 400) or UDim2.new(0, 500, 0, 40)
+    end)
+
+    -- Keybind buka/tutup pakai RightControl
+    game:GetService("UserInputService").InputBegan:Connect(function(input, gpe)
+        if gpe then return end
+        if input.KeyCode == Enum.KeyCode.RightControl then
+            gui.Enabled = not gui.Enabled
+        end
+    end)
 
     local window = {}
 
