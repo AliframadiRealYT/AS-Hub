@@ -1,0 +1,93 @@
+-- SpeedHubXClone UI Library -- Features: draggable UI, customizable title & color, window toggle, tabs, sections, components (label, button, toggle, textbox, dropdown, slider)
+
+local Players = game:GetService("Players") local Player = Players.LocalPlayer local TweenService = game:GetService("TweenService") local UserInputService = game:GetService("UserInputService")
+
+local Library = {} Library.__index = Library
+
+function Library.new(config) local self = setmetatable({}, Library) self.title = config.Title or "SpeedHubXClone" self.titleColor = config.Color or Color3.new(1, 0, 0) self.size = config.Size or UDim2.new(0, 500, 0, 400) self.position = config.Position or UDim2.new(0.5, -250, 0.5, -200) self:initUI() return self end
+
+function Library:initUI() -- ScreenGui local gui = Instance.new("ScreenGui") gui.Name = "SpeedHubXCloneGUI" gui.Parent = game:GetService("CoreGui") self.gui = gui
+
+-- Main Frame
+local frame = Instance.new("Frame", gui)
+frame.Size = self.size
+frame.Position = self.position
+frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+self.main = frame
+
+Instance.new("UICorner", frame)
+
+-- Title Bar
+local titleBar = Instance.new("Frame", frame)
+titleBar.Size = UDim2.new(1, 0, 0, 40)
+titleBar.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+Instance.new("UICorner", titleBar)
+
+local titleLabel = Instance.new("TextLabel", titleBar)
+titleLabel.Size = UDim2.new(1, -40, 1, 0)
+titleLabel.Position = UDim2.new(0, 10, 0, 0)
+titleLabel.Text = self.title
+titleLabel.Font = Enum.Font.GothamBold
+titleLabel.TextSize = 20
+titleLabel.TextColor3 = self.titleColor
+titleLabel.BackgroundTransparency = 1
+
+-- Toggle Button
+local toggleBtn = Instance.new("TextButton", titleBar)
+toggleBtn.Size = UDim2.new(0, 40, 1, 0)
+toggleBtn.Position = UDim2.new(1, -40, 0, 0)
+toggleBtn.Text = "-"
+toggleBtn.Font = Enum.Font.GothamBold
+toggleBtn.TextSize = 24
+toggleBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+toggleBtn.TextColor3 = Color3.new(1,1,1)
+
+-- Content
+local content = Instance.new("ScrollingFrame", frame)
+content.Position = UDim2.new(0, 0, 0, 40)
+content.Size = UDim2.new(1, 0, 1, -40)
+content.BackgroundTransparency = 1
+content.ScrollBarThickness = 6
+local layout = Instance.new("UIListLayout", content)
+layout.Padding = UDim.new(0,8)
+layout.SortOrder = Enum.SortOrder.LayoutOrder
+layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    content.CanvasSize = UDim2.new(0,0,0, layout.AbsoluteContentSize.Y + 10)
+end)
+self.content = content
+
+-- Toggle open/close
+local open = true
+toggleBtn.MouseButton1Click:Connect(function()
+    open = not open
+    content.Visible = open
+    toggleBtn.Text = open and "-" or "+"
+    frame.Size = open and self.size or UDim2.new(self.size.X.Scale, self.size.X.Offset, 0, 40)
+end)
+
+-- Keyboard toggle
+UserInputService.InputBegan:Connect(function(input, gpe)
+    if not gpe and input.KeyCode == Enum.KeyCode.RightControl then
+        gui.Enabled = not gui.Enabled
+    end
+end)
+
+end
+
+-- Components function Library:CreateLabel(text) local lbl = Instance.new("TextLabel", self.content) lbl.Size = UDim2.new(1, -20, 0, 25) lbl.BackgroundColor3 = Color3.fromRGB(35,35,35) lbl.Text = text lbl.TextColor3 = Color3.new(1,1,1) lbl.Font = Enum.Font.Gotham lbl.TextSize = 14 return lbl end
+
+function Library:CreateButton(text, callback) local btn = Instance.new("TextButton", self.content) btn.Size = UDim2.new(1, -20, 0, 30) btn.BackgroundColor3 = Color3.fromRGB(45,45,45) btn.Text = text btn.Font = Enum.Font.Gotham btn.TextSize = 14 btn.TextColor3 = Color3.new(1,1,1) btn.MouseButton1Click:Connect(callback) return btn end
+
+function Library:CreateToggle(text, callback) local btn = self:CreateButton(text, function() state = not state btn.Text = (state and "[ ON ] " or "[ OFF ] ")..text callback(state) end) local state = false return btn end
+
+function Library:CreateTextbox(placeholder, callback) local box = Instance.new("TextBox", self.content) box.Size = UDim2.new(1, -20, 0, 30) box.PlaceholderText = placeholder box.BackgroundColor3 = Color3.fromRGB(45,45,45) box.TextColor3 = Color3.new(1,1,1) box.Font = Enum.Font.Gotham box.TextSize = 14 box.ClearTextOnFocus = false box.FocusLost:Connect(function(enter) if enter then callback(box.Text) end end) return box end
+
+function Library:CreateDropdown(title, options, callback) local holder = Instance.new("Frame", self.content) holder.Size = UDim2.new(1, -20, 0, 30) holder.BackgroundColor3 = Color3.fromRGB(45,45,45) local btn = Instance.new("TextButton", holder) btn.Size = UDim2.new(1, 0, 1, 0) btn.Text = "[ + ] "..title btn.Font = Enum.Font.Gotham btn.TextSize = 14 btn.TextColor3 = Color3.new(1,1,1) btn.BackgroundTransparency = 1 local open = false btn.MouseButton1Click:Connect(function() open = not open; btn.Text = (open and "[ - ] " or "[ + ] ")..title for _,c in pairs(holder:GetChildren()) do if c:IsA("TextButton") and c~=btn then c.Visible = open end end end) for i,opt in ipairs(options) do local o = Instance.new("TextButton", holder) o.Size = UDim2.new(1, 0, 0, 25) o.Position = UDim2.new(0, 0, 1, (i-1)*25) o.Text = opt o.Font = Enum.Font.Gotham o.TextSize = 14 o.TextColor3 = Color3.new(1,1,1) o.BackgroundColor3 = Color3.fromRGB(55,55,55) o.Visible = false o.MouseButton1Click:Connect(function() callback(opt) end) end return holder end
+
+function Library:CreateSlider(text, min, max, default, callback) local frm = Instance.new("Frame", self.content) frm.Size = UDim2.new(1, -20, 0, 40) frm.BackgroundColor3 = Color3.fromRGB(45,45,45) local lbl = Instance.new("TextLabel", frm) lbl.Size = UDim2.new(1,0,0,20); lbl.Position = UDim2.new(0,0,0,0) lbl.Text = text..": "..default; lbl.TextColor3=Color3.new(1,1,1) lbl.BackgroundTransparency=1; lbl.Font=Enum.Font.Gotham; lbl.TextSize=14 local s = Instance.new("TextButton", frm) s.Size=UDim2.new(1,0,0,15); s.Position=UDim2.new(0,0,0,25); s.BackgroundColor3=Color3.fromRGB(55,55,55) local val=default s.MouseButton1Down:Connect(function() local conn conn = UserInputService.InputChanged:Connect(function(inp) if inp.UserInputType==Enum.UserInputType.MouseMovement then local p = math.clamp((inp.Position.X-s.AbsolutePosition.X)/s.AbsoluteSize.X,0,1) val = math.floor(min + (max-min)*p +0.5) lbl.Text = text..": "..val callback(val) end end) UserInputService.InputEnded:Wait(); conn:Disconnect() end) return frm end
+
+return Library
+
